@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Calculator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('https://cdnlearnblog.etmoney.com/wp-content/uploads/2023/03/best-practices-for-home-loans.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator-container {
+            background-color: #ffffff5b;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #007bffc2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0057b3b4;
+        }
+
+        .result-container {
+            margin-top: 20px;
+        }
+
+        .result-container h2 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f8f8f8ca;
+            color: #333;
+        }
+
+        td {
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1><i class="fas fa-calculator"></i> Loan Calculator</h1>
+
+        <div class="input-group">
+            <label for="loanType"><i class="fas fa-list-alt"></i> Loan Type:</label>
+            <select id="loanType">
+                <option value="personal">Personal Loan</option>
+                <option value="car">Car Loan</option>
+                <option value="home">Home Loan</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="loanAmount"><i class="fas fa-money-bill-wave"></i> Loan Amount:</label>
+            <input type="number" id="loanAmount" placeholder="Enter loan amount">
+        </div>
+
+        <div class="input-group">
+            <label for="loanTerm"><i class="fas fa-calendar-alt"></i> Loan Term (years):</label>
+            <input type="number" id="loanTerm" placeholder="Enter loan term">
+        </div>
+
+        <button id="calculateBtn"><i class="fas fa-calculator"></i> Calculate</button>
+
+        <div class="result-container">
+            <h2>Loan Summary</h2>
+            <table>
+                <tr>
+                    <th>Loan Amount</th>
+                    <td id="displayLoanAmount">-</td>
+                </tr>
+                <tr>
+                    <th>Interest Rate</th>
+                    <td id="displayInterestRate">-</td>
+                </tr>
+                <tr>
+                    <th>Loan Term</th>
+                    <td id="displayLoanTerm">-</td>
+                </tr>
+                <tr>
+                    <th>Monthly Payment</th>
+                    <td id="monthlyPayment">-</td>
+                </tr>
+                <tr>
+                    <th>Total Payment</th>
+                    <td id="totalPayment">-</td>
+                </tr>
+                <tr>
+                    <th>Total Interest</th>
+                    <td id="totalInterest">-</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const interestRates = {
+            personal: 15,  // Example rate for personal loans
+            car: 14,       // Example rate for car loans
+            home: 13       // Example rate for home loans
+        };
+
+        document.getElementById('loanType').addEventListener('change', updateInterestRate);
+        document.getElementById('calculateBtn').addEventListener('click', calculateLoan);
+
+        function updateInterestRate() {
+            const loanType = document.getElementById('loanType').value;
+            const interestRate = interestRates[loanType];
+            document.getElementById('displayInterestRate').textContent = `${interestRate}%`;
+        }
+
+        function calculateLoan() {
+            const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+            const loanType = document.getElementById('loanType').value;
+            const interestRate = interestRates[loanType] / 100 / 12;
+            const loanTerm = parseFloat(document.getElementById('loanTerm').value) * 12;
+
+            if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTerm)) {
+                alert('Please fill in all fields correctly.');
+                return;
+            }
+
+            const x = Math.pow(1 + interestRate, loanTerm);
+            const monthlyPayment = (loanAmount * x * interestRate) / (x - 1);
+
+            const totalPayment = monthlyPayment * loanTerm;
+            const totalInterest = totalPayment - loanAmount;
+
+            document.getElementById('displayLoanAmount').textContent = `₹${loanAmount.toFixed(2)}`;
+            document.getElementById('displayInterestRate').textContent = `${(interestRate * 12 * 100).toFixed(2)}%`;
+            document.getElementById('displayLoanTerm').textContent = `${(loanTerm / 12).toFixed(0)} years`;
+            document.getElementById('monthlyPayment').textContent = `₹${monthlyPayment.toFixed(2)}`;
+            document.getElementById('totalPayment').textContent = `₹${totalPayment.toFixed(2)}`;
+            document.getElementById('totalInterest').textContent = `₹${totalInterest.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
